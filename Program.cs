@@ -30,10 +30,8 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 
 var app = builder.Build();
 
-// הפעלת CORS
 app.UseCors(MyAllowSpecificOrigins);
 
-// הפעלת Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -45,7 +43,10 @@ app.UseSwaggerUI(c =>
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapGet("/", () =>
+{
+    return "Hello, World!";
+});
 app.MapGet("/items", async (ToDoDbContext db) =>
 {
     return await db.Items.ToListAsync();
@@ -62,7 +63,6 @@ app.MapPost("/items/post", async (Item item, ToDoDbContext db) =>
     await db.SaveChangesAsync();
     return Results.Created($"/items/{item.Id}", item);
 });
-
 app.MapPut("/items/{id}", async (int id, Item updatedItem, ToDoDbContext db) =>
 {
     var item = await db.Items.FindAsync(id);
@@ -74,7 +74,6 @@ app.MapPut("/items/{id}", async (int id, Item updatedItem, ToDoDbContext db) =>
     await db.SaveChangesAsync();
     return Results.NoContent();
 });
-
 app.MapDelete("/items/{id}", async (int id, ToDoDbContext db) =>
 {
     var item = await db.Items.FindAsync(id);
@@ -84,5 +83,4 @@ app.MapDelete("/items/{id}", async (int id, ToDoDbContext db) =>
     await db.SaveChangesAsync();
     return Results.NoContent();
 });
-
 app.Run();
