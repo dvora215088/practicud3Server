@@ -63,16 +63,16 @@ app.MapPost("/items/post", async (Item item, ToDoDbContext db) =>
     await db.SaveChangesAsync();
     return Results.Created($"/items/{item.Id}", item);
 });
-app.MapPut("/items/{id}", async (int id, Item updatedItem, ToDoDbContext db) =>
+app.MapPut("/items/{id}", async (int id, bool updatedItem, ToDoDbContext db) =>
 {
     var item = await db.Items.FindAsync(id);
     if (item is null) return Results.NotFound();
 
-    item.Name = updatedItem.Name;
-    item.IsComplete = updatedItem.IsComplete;
+
+    item.IsComplete = updatedItem;
 
     await db.SaveChangesAsync();
-    return Results.NoContent();
+    return Results.Ok(item);
 });
 app.MapDelete("/items/{id}", async (int id, ToDoDbContext db) =>
 {
